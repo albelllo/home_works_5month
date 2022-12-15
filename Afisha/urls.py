@@ -1,4 +1,4 @@
-"""Afisha URL Configuration
+"""geektech_5month URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.1/topics/http/urls/
@@ -15,8 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from .yasg import urlpatterns as swagger
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/', include('movie_app.urls'))
+    path('api/v1/', include('movie_app.urls')),
+    path('api/v1/users/', include('users.urls')),
 ]
+
+urlpatterns += swagger

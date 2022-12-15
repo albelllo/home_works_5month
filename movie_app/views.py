@@ -1,48 +1,30 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 from .serializers import *
 from .models import *
 
+
 # Create your views here.
+class DirectorViewSet(ModelViewSet):
+    serializer_class = DirectorSerializer
+    queryset = Director.objects.all()
+    authentication_classes = [IsAuthenticatedOrReadOnly]
 
 
-@api_view(['GET'])
-def director_view(request):
-    directors = Director.objects.all()
-    serializer = DirectorSerializer(directors, many=True)
-    return Response(data=serializer.data)
+class MovieViewSet(ModelViewSet):
+    queryset = Movie.objects.all()
+    serializer_class = MovieSerializer
+    permission_classes = IsAuthenticatedOrReadOnly
+
+    @action(['GET'], detail=False)
+    def reviews(self, request, *args, **kwargs):
+        serializer = MoviesReviewsSerializer(self.get_queryset(), many=True)
+        return Response(data=serializer.data)
 
 
-@api_view(['GET'])
-def director_detail_view(request, **kwargs):
-    director = Director.objects.get(id=kwargs['id'])
-    data = DirectorSerializer(director, many=False).data
-    return Response(data=data)
-
-
-@api_view(['GET'])
-def movie_view(request):
-    movies = Movie.objects.all()
-    serializer = MovieSerializer(movies, many=True)
-    return Response(data=serializer.data)
-
-
-@api_view(['GET'])
-def movie_detail_view(request, **kwargs):
-    movie = Movie.objects.get(id=kwargs['id'])
-    data = MovieSerializer(movie, many=False).data
-    return Response(data=data)
-
-
-@api_view(['GET'])
-def review_view(request):
-    reviews = Review.objects.all()
-    serializer = ReviewSerializer(reviews, many=True)
-    return Response(data=serializer.data)
-
-
-@api_view(['GET'])
-def review_detail_view(request, **kwargs):
-    review = Review.objects.get(id=kwargs['id'])
-    data = ReviewSerializer(review, many=False).data
-    return Response(data=data)
+class ReviewViewSet(ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
